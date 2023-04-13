@@ -1,3 +1,3 @@
-module greenlight.adih16.net
+module greenlight.adih.net
 
 go 1.20
