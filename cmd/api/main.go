@@ -42,14 +42,10 @@ func main() {
 		logger: logger,
 	}
 
-	//Servermux declaration with /v1/healtcheck route which dispatches requests to healthcheckHandler method
-	mux := http.NewServeMux()
-	mux.HandleFunc("/v1/healthcheck", app.healthcheckHandler)
-
 	//HTTP server with timeout settings
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.port),
-		Handler:      mux,
+		Handler:      app.routes(),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
