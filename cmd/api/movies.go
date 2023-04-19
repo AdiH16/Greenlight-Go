@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
+
+	"greenlight.adih.net/internal/data"
 )
 
 // createMovieHandler for "POST /v1/movies" enpoint
@@ -19,10 +22,22 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 	//if the parameter cannot be converted it is invalid
 	id, err := app.readIDParam(r)
 	if err != nil || id < 1 {
-		http.NotFound(w, r)
+		app.notFoundResponse(w, r)
 		return
 	}
 
-	//interpolate movie ID in a placeholder response
-	fmt.Fprintf(w, "show the details of movie %d\n", id)
+	// instance of the movie struct with some dummy data
+	movie := data.Movie{
+		ID:        id,
+		CreatedAt: time.Now(),
+		Title:     "Casablanca",
+		Runtime:   102,
+		Genres:    []string{"drama", "romance", "war"},
+		Version:   1,
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"movie": movie}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }

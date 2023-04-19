@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -9,11 +8,17 @@ import (
 //application status, operating environment and version
 
 func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
-	// fixed-format JSON response from a string
-	js := `{"status": "available", "environment": %q, "version": %q}`
-	js = fmt.Sprintf(js, app.config.env, version)
+	// envelope map with response data
+	env := envelope{
+		"status": "available",
+		"system_info": map[string]string{
+			"environment": app.config.env,
+			"version":     version,
+		},
+	}
 
-	w.Header().Set("Content-type", "application/json")
-
-	w.Write([]byte(js))
+	err := app.writeJSON(w, http.StatusOK, env, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }
