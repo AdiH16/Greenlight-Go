@@ -10,14 +10,28 @@ import (
 
 // createMovieHandler for "POST /v1/movies" enpoint
 func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "create a new movie")
+	// anonymous struct to hold the information we expect in the HTTP request body
+	var input struct {
+		Title   string   `json:"title"`
+		Year    int32    `json:"year"`
+		Runtime int32    `json:"runtime"`
+		Genres  []string `json:"genres"`
+	}
+
+	// use the readJSON() to decode the request body into input struct
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	fmt.Fprintf(w, "%+v\n", input)
 }
 
 //showMovieHandler for "GET /v1/movies/:id" endpoint
 //Retrieve the "id" parameter from the URL
 
 func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request) {
-
 	//get value of the "id" with ByName() and convert it
 	//if the parameter cannot be converted it is invalid
 	id, err := app.readIDParam(r)
