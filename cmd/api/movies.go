@@ -12,10 +12,10 @@ import (
 func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
 	// anonymous struct to hold the information we expect in the HTTP request body
 	var input struct {
-		Title   string   `json:"title"`
-		Year    int32    `json:"year"`
-		Runtime int32    `json:"runtime"`
-		Genres  []string `json:"genres"`
+		Title   string       `json:"title"`
+		Year    int32        `json:"year"`
+		Runtime data.Runtime `json:"runtime"`
+		Genres  []string     `json:"genres"`
 	}
 
 	// use the readJSON() to decode the request body into input struct
