@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"greenlight.adih.net/internal/data"
+	"greenlight.adih.net/internal/validator"
 )
 
 // createMovieHandler for "POST /v1/movies" enpoint
@@ -22,6 +23,22 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	err := app.readJSON(w, r, &input)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	// copy values from input struct to a new Movie struct
+	movie := &data.Movie{
+		Title:   input.Title,
+		Year:    input.Year,
+		Runtime: input.Runtime,
+		Genres:  input.Genres,
+	}
+
+	// new Validator instance
+	v := validator.New()
+
+	if data.ValidateMovie(v, movie); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
 
